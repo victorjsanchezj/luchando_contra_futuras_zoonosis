@@ -39,11 +39,19 @@ Es un excel creado a partir del Censo Porcino de CLM. Lo creé en base a datos d
 villages_macrogranjas <- read_excel("data/porcino +2000.xlsx")
 ```
 
+Segundamente, importamos un shapefile con datos geoespaciales de Castilla-La Mancha
+(CLM). Un shapefile es un tipo de archivo con información georeferenciada que
+nos permite, entre otras cosas, dibujar mapas en un ordenador.
+
+```{r}
+CLM_provinces <- st_read("data/Provincias.shp") 
+```
+
 
 Para nuestro siguiente paso tenemos que "limpiar" nuestros datos. Como varios pueblos contienen
 artículos en sus nombres (ex: El Bonillo), vamos a usar la siguiente línea de código para
 separar el nombre de los pueblos con artículos en dos. Tendremos una columna que contendrá el
-artículot otra el municipio sin artículo.
+artículo y otra el municipio sin artículo.
 
 ```{r}
 villages_macrogranjas_municipality_split <- villages_macrogranjas %>% 
@@ -61,21 +69,34 @@ villages_geocoded <- villages_macrogranjas_municipality_split %>%
   geocode("MUNICIPIO", method = 'osm', lat = latitude , long = longitude, min_time=2)
 ```
 
-Now we just have to plot our data in a new map!
+Ahora sólo tenemos que representar la información en un mapa. El código que
+utilizamos para ello no es muy complejo, pero incluye varios pasos. Cada
+paso está explicado dentro del código.
 
 ```{r}
-CLM_provinces %>%
-  ggplot(aes("gray33"))+
-  geom_sf(color = "black", size = 0.1) +
-  geom_point(data=villages_geocoded, aes(x=longitude, y=latitude, size=Animales, colour="pink", alpha=0.01)) +
-  annotation_scale(location = "br", width_hint = 0.5) +
-  annotation_north_arrow(location = "br", which_north = "true", 
+CLM_provinces %>% #Aquí le pedimos a R que use como su fuente de datos geospaciales
+  # "CLM_provinces", el shapefile con datos sobre las provincias de CLM.
+  ggplot(aes("gray33"))+ #Aquí le pedimos que use una tonalidad específica de gris para el fondo.
+  geom_sf(color = "black", size = 0.1) + #Aquí le pedimos que dibuje las líneas provinciales en negro
+  geom_point(data=villages_geocoded, aes(x=longitude, y=latitude, size=Animales, colour="pink", alpha=0.01)) + #Aquí le pedimos que, encima del mapa de las provincias que hemos creado usando CLM_provinces, dibuje
+  # un mapa de puntos con información procedente de "villages_geocoded". Que las coordenadas X de
+  # "villages_geocoded" están en la fila "longitude" y las Y en la fila "latitude". Después,
+  # especificamos que queremos que el tamaño de los puntos varié según el valor asignado a cada
+  # punto en la columna "Animales". Finalmente, le decimos que queremos que los puntos sean de color
+  # rosa y transparentes.
+  annotation_scale(location = "br", width_hint = 0.5) + #Le pedimos que coloque la escala
+  # de nuestro mapa a mano inferior derecha.
+  annotation_north_arrow(location = "br", which_north = "true", # Le pedimos que coloque una flecha 
+                         # de norte, en el lado derecho inferior, que este orientada al norte
                          pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
-                         style = north_arrow_fancy_orienteering) +
-  coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) +
-  guides(colour = FALSE, alpha = FALSE)+
-  xlab("Longitud")+
-  ylab("Latitud")
+                         style = north_arrow_fancy_orienteering) + #Especificamos el estilo de la flecha
+  coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) + #Le especificamos las coordenadas que queremos
+  # que muestre nuestro mapa.
+  guides(colour = FALSE, alpha = FALSE)+ #Como las variables de nuestro mapa de puntos 
+  # (color=rosa y alpha=0.1) son estéticas, no tiene sentido incluirlas en nuestro mapa.
+  # R lo hace automaticamente, nosotros podemos quitarla con este comando
+  xlab("Longitud")+ #Ahora le pedimos a R que nombre la X como "Longitud"
+  ylab("Latitud") #Finalmente, pedimos a R que nombre la Y como "Latitud".
 ```
 
 ¡Aquí tenemos nuestro primer mapa!
