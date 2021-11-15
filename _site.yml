@@ -1,0 +1,11 @@
+name: "Fighting for our lives: Accompanying website"
+navbar:
+  title: "Fighting for our lives: Accompanying website"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Producing basic cartographies"
+      href: Cartography.html
+    - text: "Quantitative Analysis"
+      href: Links.html
+output_dir: "docs"

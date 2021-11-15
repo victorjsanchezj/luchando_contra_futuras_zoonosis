@@ -1,0 +1,121 @@
+---
+title: "Cartografía"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '1'
+  html_document:
+    toc: yes
+    toc_float: yes
+    collapsed: no
+    number_sections: no
+    toc_depth: 1
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
+```
+
+Empezamos cargando las librerías que utilizaremos.
+```{r}
+library(tidyverse)
+library(sf)
+library(ggspatial)
+library(readxl)
+library(writexl)
+library(sf)
+library(tidygeocoder)
+```
+
+# 1 Creando un mapa de las granjas indsutriales de porcino existentes.
+
+El primer mapa que crearemos será un mapa de las macrogranjas existentes en CLM en 2019.
+
+
+Primeramente, importamos un excel que contiene las granjas porcinas con al menos 2000 cabezas.
+Es un excel creado a partir del Censo Porcino de CLM. Lo creé en base a datos de la Junta.
+
+```{r}
+villages_macrogranjas <- read_excel("data/porcino +2000.xlsx")
+```
+
+
+Para nuestro siguiente paso tenemos que "limpiar" nuestros datos. Como varios pueblos contienen
+artículos en sus nombres (ex: El Bonillo), vamos a usar la siguiente línea de código para
+separar el nombre de los pueblos con artículos en dos. Tendremos una columna que contendrá el
+artículot otra el municipio sin artículo.
+
+```{r}
+villages_macrogranjas_municipality_split <- villages_macrogranjas %>% 
+  separate(Municipio,c("MUNICIPIO","ARTICULO"),sep=",")
+```
+
+Como el lector/la lectora habrá podido observar, el excel con el que estamos trabajando no
+cuenta con coordenadas. Esto es un problema a la hora de crear un mapa. Afortunadamente,
+podemos usar el siguiente código para geocodificar automáticamente los pueblos donde existe(n),
+al menos, una granja con 2000 o más cabezas de porcino. Para realizar la geodificación, estamos
+solicitando acceso a los datos de Open Street Maps.
+
+```{r}
+villages_geocoded <- villages_macrogranjas_municipality_split %>%
+  geocode("MUNICIPIO", method = 'osm', lat = latitude , long = longitude, min_time=2)
+```
+
+Now we just have to plot our data in a new map!
+
+```{r}
+CLM_provinces %>%
+  ggplot(aes("gray33"))+
+  geom_sf(color = "black", size = 0.1) +
+  geom_point(data=villages_geocoded, aes(x=longitude, y=latitude, size=Animales, colour="pink", alpha=0.01)) +
+  annotation_scale(location = "br", width_hint = 0.5) +
+  annotation_north_arrow(location = "br", which_north = "true", 
+                         pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
+                         style = north_arrow_fancy_orienteering) +
+  coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) +
+  guides(colour = FALSE, alpha = FALSE)+
+  xlab("Longitud")+
+  ylab("Latitud")
+```
+
+¡Aquí tenemos nuestro primer mapa!
+
+# 2 Creando un mapa de las granjas indsutriales de porcino proyectadas.
+
+Finalmente, vamos a crear un mapa de las granjas industriales de porcino proyectadas en CLM. Los
+datos provienen del NEVIA, un repositorio de la Junta de CLM que recoge los proyectos de evaluación
+ambiental. Es una fuente muy útil pero algo incompleta. No siempre determina la cantidad de
+cabezas que una granja planea tener en las mismas unidades (en ocasiones se usan cabezas y, en otras
+ocasiones, se usan Unidades Ganaderas Mayores). Por lo tanto, sólo podemos dar información sobre los
+lugares en los que se han proyectados granjas con 2000 o más cabezas (o bien con su equivalencia en
+Unidades Ganaderas Mayores).
+
+```{r}
+projected_macrogranjas <- read_excel("data/projected_macrogranjas_clean.xlsx")
+```
+
+Al igual que en último mapa, nuestra base de datos inicial no tienen geocoordenadas. No tenemos
+que preocuparnos, Open Street Maps nos volverá a sacar de esta situación.
+
+```{r}
+projected_macrogranjas_geocoded <- projected_macrogranjas %>%
+  geocode("Municipio", method = 'osm', lat = latitude , long = longitude, min_time=2)
+```
+
+Finalmente, sólo tenemos que crear nuestro segundo mapa.
+
+```{r}
+CLM_provinces %>%
+  ggplot(aes("gray33"))+
+  geom_sf(color = "black", size = 0.1) +
+  geom_point(data=projected_macrogranjas_geocoded, colour="purple3", aes(x=longitude, y=latitude, alpha=0.01)) +
+  annotation_scale(location = "br", width_hint = 0.5) +
+  annotation_north_arrow(location = "br", which_north = "true", 
+                         pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
+                         style = north_arrow_fancy_orienteering) +
+  coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) +
+  guides(colour = FALSE, alpha = FALSE)+
+  xlab("Longitude")+
+  ylab("Latitude")
+```
+

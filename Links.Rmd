@@ -1,0 +1,55 @@
+---
+title: "Quantitative Analysis"
+output: html_document
+---
+
+Once again, we start by loading our key libraries
+```{r}
+library(readxl)
+library(tidyverse)
+library(scales)
+library(RColorBrewer)
+
+```
+
+# 1 Exports of pork meat from Spain to China and the EU.
+
+Here, we plan to create a bar chart that shows the evolution of pork emat exports from
+Spain to China and the rest of EU countries. I gathered the data from the Spanish
+Government and manually created an excel file. Let's read that excel file ;)
+
+```{r}
+exports<- read_excel("data/pigmeat_exports2.xlsx")
+```
+
+Now, we are dealing with large numbers. To turn of R's scientific notation in our map, we will
+run the following command stating that are should only use it after a given limit.
+
+```{r}
+options(scipen=2000000000)
+```
+
+The only thing left to do it to plot the yearly exports, the next command takes care of it.
+
+```{r}
+ggplot(data = exports, mapping = aes(x=Year, y=Tonnes, fill=Destination)) +
+  scale_fill_manual(values = c("bisque4", "black"))+
+  geom_bar(stat="identity", position = "dodge")
+```
+
+And here is our bar chart showing the yearly export of pigmeat from Spain to
+China and the EU
+
+# 2 Imports of soy to Spain (global data)
+
+Lastly, there one data source left to provide here is the trade matrix I used
+to find out that almost two thirds of the soy imported to Spain comes from
+Argentina. There is no need to manipulate the dataset, but I feel like it
+is important to share it here as to add transparency to my project. I obtained
+the data from FAOSTAT and manually calculated the percentages.
+
+
+```{r}
+imports<- read_csv("data/Imports_feed_Spain_2019.csv")
+```
+
