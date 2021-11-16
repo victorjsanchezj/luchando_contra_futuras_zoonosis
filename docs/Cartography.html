@@ -11,7 +11,7 @@
 
 
 
-<title>Creating basic cartographies</title>
+<title>Cartografía</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -312,18 +312,18 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Fighting for our lives: Accompanying website</a>
+      <a class="navbar-brand" href="index.html">Luchando contra futuras zoonosis</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
+  <a href="index.html">Inicio</a>
 </li>
 <li>
   <a href="Cartography.html">Producing basic cartographies</a>
 </li>
 <li>
-  <a href="Links.html">Quantitative Analysis</a>
+  <a href="Links.html">Flujos comerciales</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -337,12 +337,12 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Creating basic cartographies</h1>
+<h1 class="title toc-ignore">Cartografía</h1>
 
 </div>
 
 
-<p>We start by loading libraries</p>
+<p>Empezamos cargando las librerías que utilizaremos.</p>
 <pre class="r"><code>library(tidyverse)
 library(sf)
 library(ggspatial)
@@ -350,147 +350,62 @@ library(readxl)
 library(writexl)
 library(sf)
 library(tidygeocoder)</code></pre>
-<div id="creating-maps-with-already-existing-geospatial-information." class="section level1">
-<h1>1 Creating maps with already existing geospatial information.</h1>
-<p>The first data sets we will load are shapefiles. Shapefiles are geospatial datasets that contains the necessary information to produce maps.</p>
-<p>The first dataset we will load is from the Spanish Institue of Geography. It contains data on the legal limits of Spain’s autonomous communities.I obtained this data set form the open data repository of CLM’s government. We will load it and use it as our basic cartography of CLM’s provinces.</p>
-<p>#Data for the autonomous communities.</p>
-<p>We start by reading the shapefile.</p>
-<pre class="r"><code>CCAA &lt;- st_read(&quot;data/recintos_autonomicas_inspire_peninbal_etrs89.shp&quot;)</code></pre>
-<pre><code>## Reading layer `recintos_autonomicas_inspire_peninbal_etrs89&#39; from data source 
-##   `C:\Victor\KCL\Thesis\R\Website\Fighting_for_our_lives_MA_Thesis\data\recintos_autonomicas_inspire_peninbal_etrs89.shp&#39; 
-##   using driver `ESRI Shapefile&#39;
-## Simple feature collection with 20 features and 9 fields
-## Geometry type: MULTIPOLYGON
-## Dimension:     XY
-## Bounding box:  xmin: -9.301516 ymin: 35.17045 xmax: 4.327785 ymax: 43.79238
-## Geodetic CRS:  ETRS89</code></pre>
-<p>Just to check that our data set is properly loaded, let’s make our first map!</p>
-<pre class="r"><code>ggplot()+# We are asking R to use the ggplot tools to produce a visualization
-  geom_sf(data = CCAA, aes(fill=))+# We are asking R to
-  annotation_north_arrow(location=&quot;br&quot;, which_nort=TRUE,# Here we are adding
-                         #a north facing arrow to make the map more 
-                         #readable. We are telling r to place it in the
-                         #bottom right hand side (&quot;br&quot;) and use the real
-                         #north as a point of reference.
-                         style = north_arrow_fancy_orienteering(), 
-                         #this is a mere stylistic decision. I am asking R to
-                         #use the style north_arrow_fancy_orienteering
-                         #because I like how it looks.
-                         height = unit(2.5, &quot;cm&quot;),# We specify the arrow&#39;s
-                         #height to 2.5cm.
-                         width = unit(2.5, &quot;cm&quot;))+# We specify the arrow&#39;s
-                         #width to 2.5cm.
-  annotation_scale()# Lastly, this piece of automatically calculates</code></pre>
-<p><img src="Cartography_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<pre class="r"><code>  #our map&#39;s scale.</code></pre>
-<p>It works! We have a map. Now we have to make the dataset more operable. Remember that our goal is to create a map that situates CLM within Spain. Thus, we will look at the column NATCODE. The NATCODE is a string of numbers containing information about several geographic features. For instance, the first two characters of a NATCODE tell us which country a given feature belongs to, whereas the third and fourth characters tell us which autonomous community is a given place part of. Using this information, I will break down the column NATCODE and create new columns identifying the country, autonomous community, province and municipilaty of our data. I promise this is the hardest bit we will do in this website!</p>
-<pre class="r"><code>CCAA_2&lt;- CCAA%&gt;%
-  mutate(
-    c_country       = str_sub(string = NATCODE, start = 1, end = 2),
-    c_CCAA = str_sub(string = NATCODE, start = 3, end = 4),
-    c_province  = str_sub(string = NATCODE, start = 5, end = 6),
-    cod_ine_municipality  = str_sub(string = NATCODE, start = 7, end = -1))
-names(CCAA_2)</code></pre>
-<pre><code>##  [1] &quot;INSPIREID&quot;            &quot;COUNTRY&quot;              &quot;NATLEV&quot;              
-##  [4] &quot;NATLEVNAME&quot;           &quot;NATCODE&quot;              &quot;NAMEUNIT&quot;            
-##  [7] &quot;CODNUT1&quot;              &quot;CODNUT2&quot;              &quot;CODNUT3&quot;             
-## [10] &quot;geometry&quot;             &quot;c_country&quot;            &quot;c_CCAA&quot;              
-## [13] &quot;c_province&quot;           &quot;cod_ine_municipality&quot;</code></pre>
-<p>Now that we have split the NATCODE and created a new column where each Autonomous Community has its own code, we can situate CLM within Spain.</p>
-<p>Firstly, we will create a very simple object containing only the data for CLM. It will be called “castilla_la_mancha”</p>
-<pre class="r"><code>castilla_la_mancha &lt;- CCAA_2%&gt;% #Here we are asking R to create a new object by looking at
-  #the data frame &quot;CCAA_2&quot;.
-    filter(c_CCAA == &quot;08&quot;) # And this code could be read by a human as: &quot;Out of the data frame
-# CCAA_2, look for every instance where 08 (CLM&#39;s code) appeared in the c_CCAA column&quot;. </code></pre>
-<p>After creating an object containing the data frame for CLM, we can plot it on top of our previous map!</p>
-<pre class="r"><code>ggplot()+
-  geom_sf (data = CCAA_2, aes(fill=NULL))+ #Use the data frame CCAA_2 to build our basic map
-  geom_sf (data = castilla_la_mancha , aes(fill=&quot;red&quot;))+ #paint the object
-  #contained in castilla_la_mancha (CLM&#39;s space) in red
-  annotation_north_arrow(location=&quot;tr&quot;, which_north=TRUE,# 
-                         style = north_arrow_fancy_orienteering(),
-                         height = unit(2, &quot;cm&quot;),
-                         width = unit(2, &quot;cm&quot;))+
-  annotation_scale() +
-   guides(fill = FALSE)+ #Here I am asking R not to show a label specifying the color
-  theme(axis.text = element_blank(), #This part gets rid of the coordinates to make a clearer map,
-        #I decided to do so in this map because providing precise geospatial information is not
-        #as important in the maps plotting macrogranjas
-        axis.line = element_blank(),
-        axis.ticks = element_blank(),
-        panel.border = element_blank(),
-        panel.grid = element_blank(),
-        axis.title = element_blank())</code></pre>
-<p><img src="Cartography_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>We are done with out first map! Now, let’s figure out where are CLM’s provinces ;)</p>
-<p>#Data for the provinces within Spain.</p>
-<p>Once again, the first step is to load the corresponding shapefile.</p>
+<div id="creando-un-mapa-de-las-granjas-indsutriales-de-porcino-existentes." class="section level1">
+<h1>1 Creando un mapa de las granjas indsutriales de porcino existentes.</h1>
+<p>El primer mapa que crearemos será un mapa de las macrogranjas existentes en CLM en 2019.</p>
+<p>Primeramente, importamos un excel que contiene las granjas porcinas con al menos 2000 cabezas. Es un excel creado a partir del Censo Porcino de CLM. Lo creé en base a datos de la Junta.</p>
+<pre class="r"><code>villages_macrogranjas &lt;- read_excel(&quot;data/porcino +2000.xlsx&quot;)</code></pre>
+<p>Segundamente, importamos un shapefile con datos geoespaciales de Castilla-La Mancha (CLM). Un shapefile es un tipo de archivo con información georeferenciada que nos permite, entre otras cosas, dibujar mapas en un ordenador.</p>
 <pre class="r"><code>CLM_provinces &lt;- st_read(&quot;data/Provincias.shp&quot;) </code></pre>
 <pre><code>## Reading layer `Provincias&#39; from data source 
-##   `C:\Victor\KCL\Thesis\R\Website\Fighting_for_our_lives_MA_Thesis\data\Provincias.shp&#39; 
+##   `C:\Victor\Ecologia Politica\ecologia politica paper\PÃ¡gina web\luchando_contra_futuras_zoonosis\data\Provincias.shp&#39; 
 ##   using driver `ESRI Shapefile&#39;
 ## Simple feature collection with 5 features and 7 fields
 ## Geometry type: MULTIPOLYGON
 ## Dimension:     XY
 ## Bounding box:  xmin: -5.405995 ymin: 38.02244 xmax: -0.9159556 ymax: 41.32763
 ## Geodetic CRS:  WGS 84</code></pre>
-<p>Great! We have loaded our spatial data set. Please note that the data set is in Spanish, we will fix that in two steps.</p>
-<p>The first step is optional, we are converting our geospatial data into a data frame.</p>
-<pre class="r"><code>CLM_provinces_df &lt;- fortify(CLM_provinces) #This piece of code turns our spatial data set into
-# a data frame. A light kind of dataset that R works very well with. You can ommit this step
-# if you want to. I did this because my laptop&#39;s computing power is not the greastest one ever.</code></pre>
-<p>Now, comes the most interesting part. We are changing the name of one of the columns that we need to use later on.</p>
-<pre class="r"><code>CLM_provinces_df &lt;- rename(CLM_provinces_df, 
-       Province = NOMBRE) #We are asking R to rename the column &quot;NOMBRE&quot; (name is Spanish) as
-# &quot;Province&quot;, this will come in handy for our next map.</code></pre>
-<p>Lastly, we just have to make a map of CLM’s provinces</p>
-<pre class="r"><code>CLM_provinces_df %&gt;%
-  ggplot(aes(fill=Province, ))+
-  scale_fill_brewer(palette = &quot;Reds&quot;) +
-  geom_sf(color = &quot;black&quot;, size = 0.1)+
-  theme(axis.text = element_blank(),
-    axis.line = element_blank(),
-    axis.ticks = element_blank(),
-    panel.border = element_blank(),
-    panel.grid = element_blank(),
-    axis.title = element_blank())</code></pre>
-<p><img src="Cartography_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-</div>
-<div id="creating-maps-with-new-geospatial-information." class="section level1">
-<h1>2 Creating maps with new geospatial information.</h1>
-<p>So far we have produced maps with existing information. Now let’s produce map to locate the existing macrogranjas in CLM and the projected ones.</p>
-<p>#Map of the existing macrogranjas.</p>
-<p>First of all, we will load an excel file containing the farms that in 2019 had at least 2000 pigs.</p>
-<pre class="r"><code>villages_macrogranjas &lt;- read_excel(&quot;data/porcino +2000.xlsx&quot;)</code></pre>
-<p>Now, we will clean our data set. Since some of the municipalities’ name include articles, we will get rid of them with the following line of code</p>
+<p>Para nuestro siguiente paso tenemos que “limpiar” nuestros datos. Como varios pueblos contienen artículos en sus nombres (ex: El Bonillo), vamos a usar la siguiente línea de código para separar el nombre de los pueblos con artículos en dos. Tendremos una columna que contendrá el artículo y otra el municipio sin artículo.</p>
 <pre class="r"><code>villages_macrogranjas_municipality_split &lt;- villages_macrogranjas %&gt;% 
-  separate(Municipality,c(&quot;MUNICIPIO&quot;,&quot;ARTICLE&quot;),sep=&quot;,&quot;)</code></pre>
-<p>Note that the excel we are working with does not have coordinates, just the name of villages. We will use the package tidygeocoder to use data from OpenStreetMaps as to geocode our data automatically. There are other options to geocode municipalities automatically, GoogleMaps being one of them. However, since 2018 Google changed their terms of service and prevents users to connect to their API to produce and publish geospatial information. Hence, we are using OpenStreetMaps, an open-source project. Out of respect to the people at OpenStreetMaps we are setting a minimum time of 2 seconds between each request (each search of each municipality) to prevent overloading their service. It will take a while, so feel free to grab a cup of tea on the meantime.</p>
+  separate(Municipio,c(&quot;MUNICIPIO&quot;,&quot;ARTICULO&quot;),sep=&quot;,&quot;)</code></pre>
+<p>Como el lector/la lectora habrá podido observar, el excel con el que estamos trabajando no cuenta con coordenadas. Esto es un problema a la hora de crear un mapa. Afortunadamente, podemos usar el siguiente código para geocodificar automáticamente los pueblos donde existe(n), al menos, una granja con 2000 o más cabezas de porcino. Para realizar la geodificación, estamos solicitando acceso a los datos de Open Street Maps.</p>
 <pre class="r"><code>villages_geocoded &lt;- villages_macrogranjas_municipality_split %&gt;%
   geocode(&quot;MUNICIPIO&quot;, method = &#39;osm&#39;, lat = latitude , long = longitude, min_time=2)</code></pre>
-<p>Now we just have to plot our data in a new map!</p>
-<pre class="r"><code>CLM_provinces %&gt;%
-  ggplot(aes(&quot;gray33&quot;))+
-  geom_sf(color = &quot;black&quot;, size = 0.1) +
-  geom_point(data=villages_geocoded, aes(x=longitude, y=latitude, size=Animals, colour=&quot;pink&quot;, alpha=0.01)) +
-  annotation_scale(location = &quot;br&quot;, width_hint = 0.5) +
-  annotation_north_arrow(location = &quot;br&quot;, which_north = &quot;true&quot;, 
+<p>Ahora sólo tenemos que representar la información en un mapa. El código que utilizamos para ello no es muy complejo, pero incluye varios pasos. Cada paso está explicado dentro del código.</p>
+<pre class="r"><code>CLM_provinces %&gt;% #Aquí le pedimos a R que use como su fuente de datos geospaciales
+  # &quot;CLM_provinces&quot;, el shapefile con datos sobre las provincias de CLM.
+  ggplot(aes(&quot;gray33&quot;))+ #Aquí le pedimos que use una tonalidad específica de gris para el fondo.
+  geom_sf(color = &quot;black&quot;, size = 0.1) + #Aquí le pedimos que dibuje las líneas provinciales en negro
+  geom_point(data=villages_geocoded, aes(x=longitude, y=latitude, size=Animales, colour=&quot;pink&quot;, alpha=0.01)) + #Aquí le pedimos que, encima del mapa de las provincias que hemos creado usando CLM_provinces, dibuje
+  # un mapa de puntos con información procedente de &quot;villages_geocoded&quot;. Que las coordenadas X de
+  # &quot;villages_geocoded&quot; están en la fila &quot;longitude&quot; y las Y en la fila &quot;latitude&quot;. Después,
+  # especificamos que queremos que el tamaño de los puntos varié según el valor asignado a cada
+  # punto en la columna &quot;Animales&quot;. Finalmente, le decimos que queremos que los puntos sean de color
+  # rosa y transparentes.
+  annotation_scale(location = &quot;br&quot;, width_hint = 0.5) + #Le pedimos que coloque la escala
+  # de nuestro mapa a mano inferior derecha.
+  annotation_north_arrow(location = &quot;br&quot;, which_north = &quot;true&quot;, # Le pedimos que coloque una flecha 
+                         # de norte, en el lado derecho inferior, que este orientada al norte
                          pad_x = unit(0.75, &quot;in&quot;), pad_y = unit(0.5, &quot;in&quot;),
-                         style = north_arrow_fancy_orienteering) +
-  coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) +
-  guides(colour = FALSE, alpha = FALSE)+
-  xlab(&quot;Longitude&quot;)+
-  ylab(&quot;Latitude&quot;)</code></pre>
-<p><img src="Cartography_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<p>Here is our map!</p>
-<p>#Map of projected macrogranjas.</p>
-<p>Now, let’s create our last map. We will follow the same steps that we did above. I obtained the information from NEVIA in early August 2021. By the time you are reading this, there is a good chance the data is outdated.</p>
+                         style = north_arrow_fancy_orienteering) + #Especificamos el estilo de la flecha
+  coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) + #Le especificamos las coordenadas que queremos
+  # que muestre nuestro mapa.
+  guides(colour = FALSE, alpha = FALSE)+ #Como las variables de nuestro mapa de puntos 
+  # (color=rosa y alpha=0.1) son estéticas, no tiene sentido incluirlas en nuestro mapa.
+  # R lo hace automaticamente, nosotros podemos quitarla con este comando
+  xlab(&quot;Longitud&quot;)+ #Ahora le pedimos a R que nombre la X como &quot;Longitud&quot;
+  ylab(&quot;Latitud&quot;) #Finalmente, pedimos a R que nombre la Y como &quot;Latitud&quot;.</code></pre>
+<p><img src="Cartography_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>¡Aquí tenemos nuestro primer mapa!</p>
+</div>
+<div id="creando-un-mapa-de-las-granjas-indsutriales-de-porcino-proyectadas." class="section level1">
+<h1>2 Creando un mapa de las granjas indsutriales de porcino proyectadas.</h1>
+<p>Finalmente, vamos a crear un mapa de las granjas industriales de porcino proyectadas en CLM. Los datos provienen del NEVIA, un repositorio de la Junta de CLM que recoge los proyectos de evaluación ambiental. Es una fuente muy útil pero algo incompleta. No siempre determina la cantidad de cabezas que una granja planea tener en las mismas unidades (en ocasiones se usan cabezas y, en otras ocasiones, se usan Unidades Ganaderas Mayores). Por lo tanto, sólo podemos dar información sobre los lugares en los que se han proyectados granjas con 2000 o más cabezas (o bien con su equivalencia en Unidades Ganaderas Mayores).</p>
 <pre class="r"><code>projected_macrogranjas &lt;- read_excel(&quot;data/projected_macrogranjas_clean.xlsx&quot;)</code></pre>
-<p>Just as before, our dataset lacks geospatial coordinates. Fear not, OpenStreetMaps will rescue us once again.</p>
+<p>Al igual que en último mapa, nuestra base de datos inicial no tienen geocoordenadas. No tenemos que preocuparnos, Open Street Maps nos volverá a sacar de esta situación.</p>
 <pre class="r"><code>projected_macrogranjas_geocoded &lt;- projected_macrogranjas %&gt;%
-  geocode(&quot;Municipality&quot;, method = &#39;osm&#39;, lat = latitude , long = longitude, min_time=2)</code></pre>
-<p>The last step left to do is to plot our information into a 4th map.</p>
+  geocode(&quot;Municipio&quot;, method = &#39;osm&#39;, lat = latitude , long = longitude, min_time=2)</code></pre>
+<p>Finalmente, sólo tenemos que crear nuestro segundo mapa.</p>
 <pre class="r"><code>CLM_provinces %&gt;%
   ggplot(aes(&quot;gray33&quot;))+
   geom_sf(color = &quot;black&quot;, size = 0.1) +
@@ -501,10 +416,9 @@ names(CCAA_2)</code></pre>
                          style = north_arrow_fancy_orienteering) +
   coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) +
   guides(colour = FALSE, alpha = FALSE)+
-  xlab(&quot;Longitude&quot;)+
-  ylab(&quot;Latitude&quot;)</code></pre>
-<p><img src="Cartography_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<p>And here it is! We are done with our cartographic production!</p>
+  xlab(&quot;Longitud&quot;)+
+  ylab(&quot;Latitud&quot;)</code></pre>
+<p><img src="Cartography_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 
 
