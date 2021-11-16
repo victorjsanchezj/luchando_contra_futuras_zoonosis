@@ -1,5 +1,5 @@
 ---
-title: "Cartografía"
+title: "Cartografías"
 output:
   html_document:
     toc: yes

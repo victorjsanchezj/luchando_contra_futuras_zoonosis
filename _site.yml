@@ -4,7 +4,7 @@ navbar:
   left:
     - text: "Inicio"
       href: index.html
-    - text: "Producing basic cartographies"
+    - text: "Cartografías"
       href: Cartography.html
     - text: "Flujos comerciales"
       href: Links.html
