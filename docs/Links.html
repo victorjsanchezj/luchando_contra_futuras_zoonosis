@@ -11,7 +11,7 @@
 
 
 
-<title>Quantitative Analysis</title>
+<title>Flujos comerciales</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -236,18 +236,18 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Fighting for our lives: Accompanying website</a>
+      <a class="navbar-brand" href="index.html">Luchando contra futuras zoonosis</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
+  <a href="index.html">Inicio</a>
 </li>
 <li>
   <a href="Cartography.html">Producing basic cartographies</a>
 </li>
 <li>
-  <a href="Links.html">Quantitative Analysis</a>
+  <a href="Links.html">Flujos comerciales</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -261,12 +261,12 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Quantitative Analysis</h1>
+<h1 class="title toc-ignore">Flujos comerciales</h1>
 
 </div>
 
 
-<p>Once again, we start by loading our key libraries</p>
+<p>Como antes, empezamos importando las librerías que utilizaremos.</p>
 <pre class="r"><code>library(readxl)</code></pre>
 <pre><code>## Warning: package &#39;readxl&#39; was built under R version 4.0.2</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
@@ -298,32 +298,24 @@ $(document).ready(function () {
 ## 
 ##     col_factor</code></pre>
 <pre class="r"><code>library(RColorBrewer)</code></pre>
-<div id="exports-of-pork-meat-from-spain-to-china-and-the-eu." class="section level1">
-<h1>1 Exports of pork meat from Spain to China and the EU.</h1>
-<p>Here, we plan to create a bar chart that shows the evolution of pork emat exports from Spain to China and the rest of EU countries. I gathered the data from the Spanish Government and manually created an excel file. Let’s read that excel file ;)</p>
+<div id="exportaciones-de-carne-porcina-desde-españa-a-china-y-al-resto-de-la-ue." class="section level1">
+<h1>1 Exportaciones de carne porcina desde España a China y al resto de la UE.</h1>
+<p>En esta ocasión, crearemos un gráfico de barras para representar la exportación de carne porcina española a sus dos principales socios: China y el resto de países miembros de la UE. Obtuve los datos del gobierno español y creé un excel manualmente. Empecemos leyendo dicho excel ;)</p>
 <pre class="r"><code>exports&lt;- read_excel(&quot;data/pigmeat_exports2.xlsx&quot;)</code></pre>
-<p>Now, we are dealing with large numbers. To turn of R’s scientific notation in our map, we will run the following command stating that are should only use it after a given limit.</p>
+<p>R tiende a usar la notación científica automaticamente. No es lo ideal en un gráfico de las caracteristicas que buscamos. Por lo tanto, vamos a utilizar el siguiente comando para que R empiece a utilizar la notación científica a partir de las 2000000000 unidades, un límite muy superior a nuestros datos.</p>
 <pre class="r"><code>options(scipen=2000000000)</code></pre>
-<p>The only thing left to do it to plot the yearly exports, the next command takes care of it.</p>
-<pre class="r"><code>ggplot(data = exports, mapping = aes(x=Year, y=Tonnes, fill=Destination)) +
+<p>La única acción restante es pedir a R que trace el gráfico correspondiente, lo cual haremos con este comando</p>
+<pre class="r"><code>ggplot(data = exports, mapping = aes(x=Año, y=Toneladas, fill=Destino)) +
   scale_fill_manual(values = c(&quot;bisque4&quot;, &quot;black&quot;))+
   geom_bar(stat=&quot;identity&quot;, position = &quot;dodge&quot;)</code></pre>
 <p><img src="Links_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>And here is our bar chart showing the yearly export of pigmeat from Spain to China and the EU</p>
 </div>
-<div id="imports-of-soy-to-spain-global-data" class="section level1">
-<h1>2 Imports of soy to Spain (global data)</h1>
+<div id="importaciones-de-productos-de-la-soja-hechas-por-españa." class="section level1">
+<h1>2 Importaciones de productos de la soja hechas por España.</h1>
 <p>Lastly, there one data source left to provide here is the trade matrix I used to find out that almost two thirds of the soy imported to Spain comes from Argentina. There is no need to manipulate the dataset, but I feel like it is important to share it here as to add transparency to my project. I obtained the data from FAOSTAT and manually calculated the percentages.</p>
-<pre class="r"><code>imports&lt;- read_csv(&quot;data/Imports_feed_Spain_2019.csv&quot;)</code></pre>
-<pre><code>## Rows: 80 Columns: 16</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (8): Domain Code, Domain, Reporter Countries, Partner Countries, Element...
-## dbl (7): Reporter Country Code (FAO), Partner Country Code (FAO), Element Co...
-## lgl (1): Flag</code></pre>
-<pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>imports&lt;- read_excel(&quot;data/Imports_feed_Spain_2019.xls&quot;)</code></pre>
+<p>El siguiente código carga otra hoja de Excel basada en la misma fuente de datos que la anterior. En esta ocasión, tenemos los porcentajes del total de productos de la soja importados desde cada país.</p>
+<pre class="r"><code>imports_per_cent &lt;- read_excel(&quot;data/Imports_feed_Spain_%_2019.xls&quot;)</code></pre>
 </div>
 
 

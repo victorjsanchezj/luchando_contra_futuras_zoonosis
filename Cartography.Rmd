@@ -1,15 +1,15 @@
 ---
 title: "Cartografía"
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: '1'
   html_document:
     toc: yes
     toc_float: yes
     collapsed: no
     number_sections: no
     toc_depth: 1
+  pdf_document:
+    toc: yes
+    toc_depth: '1'
 ---
 
 ```{r setup, include=FALSE}
@@ -136,7 +136,7 @@ CLM_provinces %>%
                          style = north_arrow_fancy_orienteering) +
   coord_sf(xlim = c(-5.5, -0.5), ylim = c(38, 41.30)) +
   guides(colour = FALSE, alpha = FALSE)+
-  xlab("Longitude")+
-  ylab("Latitude")
+  xlab("Longitud")+
+  ylab("Latitud")
 ```
 

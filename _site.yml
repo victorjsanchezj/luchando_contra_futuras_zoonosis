@@ -1,11 +1,11 @@
 name: "Fighting for our lives: Accompanying website"
 navbar:
-  title: "Fighting for our lives: Accompanying website"
+  title: "Luchando contra futuras zoonosis"
   left:
-    - text: "Home"
+    - text: "Inicio"
       href: index.html
     - text: "Producing basic cartographies"
       href: Cartography.html
-    - text: "Quantitative Analysis"
+    - text: "Flujos comerciales"
       href: Links.html
 output_dir: "docs"

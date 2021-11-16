@@ -1,9 +1,9 @@
 ---
-title: "Quantitative Analysis"
+title: "Flujos comerciales"
 output: html_document
 ---
 
-Once again, we start by loading our key libraries
+Como antes, empezamos importando las librerías que utilizaremos.
 ```{r}
 library(readxl)
 library(tidyverse)
@@ -12,35 +12,37 @@ library(RColorBrewer)
 
 ```
 
-# 1 Exports of pork meat from Spain to China and the EU.
+# 1 Exportaciones de carne porcina desde España a China y al resto de la UE.
 
-Here, we plan to create a bar chart that shows the evolution of pork emat exports from
-Spain to China and the rest of EU countries. I gathered the data from the Spanish
-Government and manually created an excel file. Let's read that excel file ;)
+En esta ocasión, crearemos un gráfico de barras para representar la exportación
+de carne porcina española a sus dos principales socios: China y el resto de
+países miembros de la UE. Obtuve los datos del gobierno español y creé un excel
+manualmente. Empecemos leyendo dicho excel ;)
 
 ```{r}
 exports<- read_excel("data/pigmeat_exports2.xlsx")
 ```
 
-Now, we are dealing with large numbers. To turn of R's scientific notation in our map, we will
-run the following command stating that are should only use it after a given limit.
+R tiende a usar la notación científica automaticamente. No es lo ideal en un
+gráfico de las caracteristicas que buscamos. Por lo tanto, vamos a utilizar
+el siguiente comando para que R empiece a utilizar la notación científica a
+partir de las 2000000000 unidades, un límite muy superior a nuestros datos.
 
 ```{r}
 options(scipen=2000000000)
 ```
 
-The only thing left to do it to plot the yearly exports, the next command takes care of it.
+La única acción restante es pedir a R que trace el gráfico correspondiente,
+lo cual haremos con este comando
 
 ```{r}
-ggplot(data = exports, mapping = aes(x=Year, y=Tonnes, fill=Destination)) +
+ggplot(data = exports, mapping = aes(x=Año, y=Toneladas, fill=Destino)) +
   scale_fill_manual(values = c("bisque4", "black"))+
   geom_bar(stat="identity", position = "dodge")
 ```
 
-And here is our bar chart showing the yearly export of pigmeat from Spain to
-China and the EU
 
-# 2 Imports of soy to Spain (global data)
+# 2 Importaciones de productos de la soja hechas por España.
 
 Lastly, there one data source left to provide here is the trade matrix I used
 to find out that almost two thirds of the soy imported to Spain comes from
@@ -50,6 +52,14 @@ the data from FAOSTAT and manually calculated the percentages.
 
 
 ```{r}
-imports<- read_csv("data/Imports_feed_Spain_2019.csv")
+imports<- read_excel("data/Imports_feed_Spain_2019.xls")
+```
+
+El siguiente código carga otra hoja de Excel basada en la misma fuente de datos
+que la anterior. En esta ocasión, tenemos los porcentajes del total
+de productos de la soja importados desde cada país.
+
+```{r}
+imports_per_cent <- read_excel("data/Imports_feed_Spain_%_2019.xls")
 ```
 

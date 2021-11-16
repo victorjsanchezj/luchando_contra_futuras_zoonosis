@@ -34,32 +34,49 @@ por una almohodilla "#").
 
 # Agradecimientos.
 
-This website is based on the code generously shared by doctor Matthew Crump. 
-You can find his github here.
+Este trabajo no sería posible sin la ayuda de muchas personas.
 
-Likewise, I would like to acknowledge several people who helped during the 
-research and writing processes of the dissertation associated with this website. 
-The production of knowledge is never an individual task. I am grateful to my 
-informants for being the kind co-producers of knowledge that allowed to get to 
-know them and their struggles. I apologize in advance in case I have 
-miss-interpreted any of your views.
+Empezando por el nivel más obvio, la página web ante tus ojos no sería posible
+sin el código que el doctor Matthew Crump compartió en su cuenta de github. 
 
-Likewise, my own background as a social scientist means that I have not been 
-trained to explore the impacts of “macrogranjas” on human and environmental 
-health. To this end, I contacted members of Castilla la Mancha’s University 
-(UCLM) who kindly helped me by providing me with relevant literature and 
-correcting my misconceptions. I owe gratitude to Hugo, Lucía and Carmen from 
-UCLM-Albacete’s Agrarian Engineering department for sending that literature 
-across and chatting with me over coffee.
+De una manera similar, me gustaría agradecer por su tiempo, paciencia y 
+ayuda a varias personas clave para desarollar la investigación que ha
+creado el artículo "Luchando contra futuras zoonosis". La producción de
+conocimiento nunca es una tarea individual. Estoy particularmente agradecido
+a mis informantes, quienes han sido las y los amables co-productoras y 
+co-productores de conocimiento que me han permitido conocerles y me han
+enseñado sus luchas. Os pido perdón en caso de que haya malinterpretado
+vuestros puntos de vista.
 
-Similarly, the pulmonologist Jesus was of an invaluable help to understand the 
-impact of industrial farming on human health. He sent me relevant papers and 
-explained them to me. Likewise, I would not have been able to produce fieldwork 
-without my parents. They renounced to their holidays and drove around CLM to do so.
+Mi propia formación académica como un científico social significa que no
+he sido entrenado para explorar los impactos de las "macrogranjas" en
+la salud humana y medioambiental. Para ello, contacté con miembros
+de la Universidad de Castilla-La Mancha (UCLM) que me asesoraron y
+aconsejaron a la hora de obtener literatura relevante para corregir mis
+errores. Estoy en deuda con Hugo, Lucía y Carmen, del departamento de
+Ingeniería Agronóma de la UCLM de Albacete, por mandarme dicho material
+y hablar conmigo mientrás compartiamos un café.
 
-Last, but by no means least, I would like to thank my supervisor at King’s 
-College London (Doctor Pradella). She was a great role model who provided 
-helpful and patient guidance throughout the whole process.
+Del mismo modo, el neumólogo Jesús fue una ayuda incalculable para poder
+entender el impacto de la ganadería industrial en la salud humana. Al mandarme
+artículos, y tener la paciencia de explicarmelos, Jesús me pudo
+ayudar a comprender el rol de los antibióticos en la industria ganadera
+contemporanea.
+
+Así mismo, me gustaría agradecer el enorme trabajo que llevan a cabo el
+equipo editorial de "Ecología Política: Cuadernos de Debate Internacional" y
+las revisoras anónimas que, amablemente, me han aconsejado a la hora de mejorar 
+el artículo. No sólo son un grupo de personas comprometidas con la ecología 
+política (y por ende, por el mundo del que somos inter- y eco-dependientes), 
+sino que me han ayudado a corregir errores de base que habría pasado por alto 
+de otra forma.
+
+Finalmente, aunque escribo este trabajo desde la UCLM, parte de la investigación
+fue realizada durante mi Trabajo de Fin de Máster en King's College London y 
+Sciences Po Paris. Sería injusto no expresar mi gratitud a mi supervisora 
+en King's College London. Gracias a la Doctora Pradella obtuve una guía paciente 
+para descubrir el mundo de la investigación. Un mundo aposionante en el que 
+quiero seguir aprendiendo.
 
 ![](images/dancing_pig_1.jpg)
 
